@@ -6,7 +6,7 @@ const Contact = ({ contact }) => {
   return (
     <div className="mx-1 p-4 border rounded flex flex-col">
       <div className="font-semibold text-2xl border-b pb-1 mb-1">
-        <Link to={`/contact/${contact?.id}`}>
+        <Link to={`/contacts/${contact?.id}`}>
           {contact?.firstName} {contact?.lastName}
         </Link>
       </div>

@@ -15,6 +15,11 @@ const Navbar = () => {
       </h1>
       <div className="flex flex-row flex-grow">
         <div className="font-medium px-2 py-1 rounded hover:bg-gray-300">
+          <Link to="/">
+            Inbox
+          </Link>
+        </div>
+        <div className="font-medium px-2 py-1 rounded hover:bg-gray-300">
           <Link to="/compose">
             Compose
           </Link>
@@ -27,6 +32,11 @@ const Navbar = () => {
         <div className="font-medium px-2 py-1 rounded hover:bg-gray-300">
           <Link to="/contacts">
             Contacts
+          </Link>
+        </div>
+        <div className="font-medium px-2 py-1 rounded hover:bg-gray-300">
+          <Link to="/add-account">
+            Add account
           </Link>
         </div>
         <div className="font-medium px-2 py-1 rounded hover:bg-gray-300">

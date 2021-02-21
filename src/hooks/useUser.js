@@ -1,6 +1,6 @@
 import { useContext } from "react"
 import { useCallback } from "react"
-import { UserContext } from "../contexts/UserContext"
+import { UserContext } from "../contexts/userContext"
 import { axios } from "../axios"
 
 const useUser = () => {
