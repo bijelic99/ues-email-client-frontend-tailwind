@@ -19,7 +19,6 @@ const Account = () => {
     console.error(error)
   }, [history])
 
-  console.log(account)
   return account && !account.deleted ? (
     <PageContainer>
       <div className="container flex flex-col justify-start align-center gap-y-4">

@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { useContext, useEffect } from "react"
+import { useCallback, useContext, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { AccountContext } from "../../contexts/accountContext"
 import { FolderContext, FolderProvider } from "../../contexts/folderContext"
@@ -25,10 +25,11 @@ const Inbox = () => {
     else setSelectedFolder(null)
   }, [selectedFolderId])
 
-  useEffect(()=>{
-    if(selectedFolder && selectedFolder?.id != selectedFolderId)
-      setValueAccount("folder", selectedFolder?.id)
-  }, [selectedFolder, selectedFolderId, setValueAccount])
+  const setSelectedFolderId = useCallback((id) => () =>{
+    if(id) {
+      setValueAccount("folder", id)
+    }
+  },[setValueAccount])
 
   return (
     <div className="container w-10/12 mx-auto mt-8 flex flex-row gap-4 items-start">
@@ -94,8 +95,8 @@ const Inbox = () => {
         }
       </div>
       <div className="w-1/6 flex flex-col border rounded-md shadow-lg p-4 gap-y-2">
-        {childFolders.map(f=>(
-          <Folder folder={f} key={f.id} onclick={setSelectedFolderFromChildrenCallback(f.id)} />
+        {childFolders.map(f => (
+          <Folder folder={f} key={f.id} onclick={setSelectedFolderId(f.id)} />
         ))}
       </div>
     </div>

@@ -3,7 +3,8 @@ import useUser from "../../hooks/useUser"
 
 const Navbar = () => {
   const {
-    isLoggedIn
+    isLoggedIn,
+    user
   } = useUser()
 
   return isLoggedIn && (
@@ -51,7 +52,7 @@ const Navbar = () => {
         </div>
       </div>
       <div className="font-medium px-2 py-1">
-        <Link to="/">
+        <Link to={`/user/${user.id}`}>
           User
         </Link>
       </div>

@@ -15,6 +15,8 @@ import AddAccount from "./pages/AddAccount";
 import Account from "./pages/Account";
 import { AccountProvider } from "./contexts/accountContext";
 import { FolderProvider } from "./contexts/folderContext";
+import Message from "./pages/Message";
+import User from "./pages/User"
 
 function App() {
   return (
@@ -31,11 +33,15 @@ function App() {
             <PrivateRoute path='/contacts' component={Contacts} />
             <PrivateRoute path='/add-account' component={AddAccount} />
             <PrivateRoute path='/account/:id' component={Account} />
+            <PrivateRoute path='/message/:id' component={Message} />
             <AccountProvider>
+            <Switch>
+              <PrivateRoute path='/user/:id' component={User} />
               <PrivateRoute path='/compose' component={Compose} />
               <FolderProvider>
                 <PrivateRoute path='/' component={Inbox} />
               </FolderProvider>
+            </Switch>
             </AccountProvider>
           </Switch>
         </Router>

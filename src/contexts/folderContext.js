@@ -41,7 +41,6 @@ export const FolderProvider = props => {
         .then(({ status, data }) => status === 200 && setChildFolders(data))
         .catch(console.error)
     }
-    console.info(refreshedAt)
   }, [selectedFolder, refreshedAt, setChildFolders])
 
   const setSelectedFolderFromChildrenCallback = useCallback((folderId)=>()=>folderId && setSelectedFolder(childFolders.find(f=>f.id === folderId)), [childFolders, setSelectedFolder])

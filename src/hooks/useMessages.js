@@ -23,7 +23,6 @@ const useMessages = () => {
       if(status === 200) setMessages(data)
     })
     .catch(console.error)
-    console.info(refreshedAt)
   }, [selectedFolder, refreshedAt, selectedAccount, params, setMessages])
 
   const setParamsCallback = useCallback((params)=>{

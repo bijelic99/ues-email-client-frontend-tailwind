@@ -30,7 +30,6 @@ const Register = () => {
     console.log(error)
     NotificationManager.error("Registration failed")
   }, [])
-
   return (
     <div className="container max-w-2xl shadow-lg mx-auto px-8 py-4 border rounded-md mt-16">
       <form className="flex flex-col" onSubmit={handleSubmit(registerFn(onRegisterSuccess, onRegisterError))}>
