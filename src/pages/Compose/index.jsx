@@ -4,18 +4,18 @@ import { useForm } from "react-hook-form"
 import PageContainer from "../../components/PageContainer"
 import useOutgoingMessage from "../../hooks/useOutgoingMessage"
 import { Link } from "react-router-dom"
-import { useState } from "react/cjs/react.development"
+import { useEffect, useState } from "react/cjs/react.development"
 import { useCallback } from "react"
 
 const Compose = () => {
   const {
-    to,
+    recipient,
     cc,
     bcc,
     addToTo,
     addToCc,
     addToBcc,
-    removeFromTo,
+    
     removeFromCc,
     removeFromBcc,
     sendEmail
@@ -52,6 +52,7 @@ const Compose = () => {
     switch (fieldName) {
       case "to":
         addToTo(data[fieldName])
+        console.log(data[fieldName])
         break;
     
       default:
@@ -59,7 +60,8 @@ const Compose = () => {
     }
   }, [addToTo])
 
-  console.log(to)
+  useEffect(()=>console.log("useEffect", recipient), [recipient])
+
   return (
     <PageContainer>
       <div className="flex flex-col gap-y-2">
@@ -69,8 +71,8 @@ const Compose = () => {
             <input className="mx-1 border rounded p-1" type="text" name="to" id="to" ref={registerTo} />
             <input className="py-1 px-2" type="submit" value="Add" />
             <div className="flex-grow mr-2 flex flex-row gap-x-1">{
-              to.map((t, i) => (
-                <button onClick={removeFromTo(t)} key={i}>{t}</button>
+              recipient.map((t, i) => (
+                <button onClick={console.log} key={i}>{t}</button>
               ))
             }</div>
           </form>
