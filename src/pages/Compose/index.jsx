@@ -3,41 +3,45 @@ import { joiResolver } from "@hookform/resolvers/joi"
 import { useForm } from "react-hook-form"
 import PageContainer from "../../components/PageContainer"
 import useOutgoingMessage from "../../hooks/useOutgoingMessage"
-import { Link } from "react-router-dom"
+import { Link, useHistory } from "react-router-dom"
 import { useEffect, useState } from "react/cjs/react.development"
 import { useCallback } from "react"
+import { NotificationManager } from "react-notifications"
 
 const Compose = () => {
+  const history = useHistory()
   const {
     recipient,
     cc,
     bcc,
-    addToTo,
+    addToRecipient,
     addToCc,
     addToBcc,
-    
+    removeFromRecipient,
     removeFromCc,
     removeFromBcc,
     sendEmail
   } = useOutgoingMessage()
 
   const schema = Joi.object({
-
+    subject: Joi.string().required().max(1024),
+    attachments: Joi.object().optional(),
+    content: Joi.string().required().max(1024)
   })
 
   const addressOnlySchema = useCallback((fieldName) => {
     const obj = {}
-    obj[fieldName] = Joi.string()
+    obj[fieldName] = Joi.string().email({ tlds: false }).required()
     return Joi.object(obj)
   }, [])
 
 
-  const { } = useForm({
+  const { register, handleSubmit } = useForm({
     resolver: joiResolver(schema)
   })
 
   const { register: registerTo, handleSubmit: handleSubmitTo } = useForm({
-    resolver: joiResolver(addressOnlySchema("to"))
+    resolver: joiResolver(addressOnlySchema("recipient"))
   })
 
   const { register: registerCc, handleSubmit: handleSubmitCc } = useForm({
@@ -48,62 +52,75 @@ const Compose = () => {
     resolver: joiResolver(addressOnlySchema("bcc"))
   })
 
-  const addToRecipientField = useCallback((fieldName) => (data) => {
-    switch (fieldName) {
-      case "to":
-        addToTo(data[fieldName])
-        console.log(data[fieldName])
-        break;
-    
-      default:
-        break;
-    }
-  }, [addToTo])
+  const addToRecipientField = useCallback((addFn, fieldName) => (data) => addFn(data[fieldName]), [])
+  const removeFromRecipientField = useCallback((removeFn, value) => () => removeFn(value), [])
 
-  useEffect(()=>console.log("useEffect", recipient), [recipient])
+  const onSuccess = useCallback(() => {
+    NotificationManager.success("Mail sent")
+    history.push("/")
+  }, [history])
+
+  const onError = useCallback((err) => {
+    NotificationManager.error("Mail send failed")
+    console.error(err)
+  }, [history])
 
   return (
     <PageContainer>
       <div className="flex flex-col gap-y-2">
         <div className="font-semibold text-base border-b-2 pb-2">
-          <form className="flex flex-row content-center" onSubmit={handleSubmitTo(addToRecipientField("to"))}>
-            <label htmlFor="to">To:</label>
-            <input className="mx-1 border rounded p-1" type="text" name="to" id="to" ref={registerTo} />
+          <form className="grid grid-cols-8 gap-x-2 content-center" onSubmit={handleSubmitTo(addToRecipientField(addToRecipient, "recipient"))}>
+            <label htmlFor="recipient">To:</label>
+            <input className="col-span-2 border rounded p-1" type="mail" name="recipient" id="recipient" ref={registerTo} />
             <input className="py-1 px-2" type="submit" value="Add" />
-            <div className="flex-grow mr-2 flex flex-row gap-x-1">{
+            <div className="col-span-4 flex flex-row gap-x-1">{
               recipient.map((t, i) => (
-                <button onClick={console.log} key={i}>{t}</button>
+                <button onClick={removeFromRecipientField(removeFromRecipient, t)} key={i}>{t}</button>
               ))
             }</div>
           </form>
         </div>
         <div className="font-semibold text-lg border-b-2 pb-2">
-
+          <form className="grid grid-cols-8 gap-x-2 content-center" onSubmit={handleSubmitCc(addToRecipientField(addToCc, "cc"))}>
+            <label htmlFor="cc">Cc:</label>
+            <input className="col-span-2 border rounded p-1" type="mail" name="cc" id="cc" ref={registerCc} />
+            <input className="py-1 px-2" type="submit" value="Add" />
+            <div className="col-span-4 flex flex-row gap-x-1">{
+              cc.map((t, i) => (
+                <button onClick={removeFromRecipientField(removeFromCc, t)} key={i}>{t}</button>
+              ))
+            }</div>
+          </form>
         </div>
         <div className="font-semibold text-lg border-b-2 pb-2">
-
+          <form className="grid grid-cols-8 gap-x-2 content-center" onSubmit={handleSubmitBcc(addToRecipientField(addToBcc, "bcc"))}>
+            <label htmlFor="cc">Bcc:</label>
+            <input className="col-span-2 border rounded p-1" type="mail" name="bcc" id="bcc" ref={registerBcc} />
+            <input className="py-1 px-2" type="submit" value="Add" />
+            <div className="col-span-4 flex flex-row gap-x-1">{
+              bcc.map((t, i) => (
+                <button onClick={removeFromRecipientField(removeFromBcc, t)} key={i}>{t}</button>
+              ))
+            }</div>
+          </form>
         </div>
-        <div className="font-semibold text-base border-b-2 pb-2">
-
-        </div>
-        <div className="font-semibold text-base border-b-2 pb-2">
-
-        </div>
-        <div className="font-semibold text-base border-b-2 pb-2">
-
-        </div>
-        <div className="font-semibold text-base border-b-2 pb-2">
-
-        </div>
-        <div className="font-semibold text-base border-b-2 pb-2">
-
-        </div>
-        <div className="font-semibold text-base border-b-2 pb-2 overflow-x-auto">
-
-        </div>
-        <div className="font-semibold text-base border-b-2 border-l-2 border-r-2 rounded p-2">
-
-        </div>
+        <form className="flex flex-col gap-y-2" onSubmit={handleSubmit(sendEmail(onSuccess, onError))}>
+          <div className="flex flex-col font-semibold text-base">
+            <label htmlFor="subject">Subject:</label>
+            <input type="text" name="subject" id="subject" className="border rounded p-1" ref={register} />
+          </div>
+          <div className="flex flex-col font-semibold text-base">
+            <label htmlFor="attachments">Attachments</label>
+            <input type="file" multiple name="attachments" id="attachments" ref={register} />
+          </div>
+          <div className="flex flex-col font-semibold text-base">
+            <label htmlFor="content">Content: </label>
+            <textarea className="border-2 rounded p-1" name="content" id="content" cols="30" rows="10" ref={register} />
+          </div>
+          <div className="font-semibold text-base border-b-2 pb-2">
+            <input className="bg-blue-500 text-white font-medium px-4 py-2 w-full" type="submit" value="Send" />
+          </div>
+        </form>
       </div>
     </PageContainer>
   )
